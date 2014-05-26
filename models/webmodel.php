@@ -57,7 +57,7 @@ class Webmodel extends CI_Model {
 		{
 			foreach($query->result() as $rows)
 			{
-				$sql = "SELECT nome FROM categoria WHERE id_categoria = (SELECT id_categoria FROM catpromo WHERE id_promo= ?)";
+				/*$sql = "SELECT nome FROM categoria WHERE id_categoria = (SELECT id_categoria FROM catpromo WHERE id_promo= ?)";
 				$query2=$this->db->query($sql, array($rows->id_promo));
 				$row = $query2->row_array();
 				$cat=$row['nome'];
@@ -73,7 +73,8 @@ class Webmodel extends CI_Model {
 					  'desc_resumida'  => $rows->desc_resumida,
 					  'categoria'    => $cat
 					);	
-				
+				*/
+				$promo=$this->getPromoById($rows->id_promo);
 				array_push($data, $promo);
 			}
 			return $data;
@@ -84,7 +85,7 @@ class Webmodel extends CI_Model {
 	
 	public function getPromotedPromos()
 	{
-		$promos=$this->db->get('promo');
+		$query=$this->db->get('promo');
 		$data=array();
 		if($query->num_rows()>0)
 		{
@@ -92,17 +93,7 @@ class Webmodel extends CI_Model {
 			{
 				if($rows->destaque==1)
 				{
-					$promo = array(
-					  'fim_promo'    => $rows->fim_promo,
-					  'valor_voucher'  => $rows->valor_voucher,
-					  'destaque'	=>$rows->destaque,
-					  'id_promo'	=>$rows->id_promo,
-					  'fim_destaque'  => $rows->fim_destaque,
-					  'id_entidade'    => $rows->id_entidade,
-					  'desc_resumida'  => $rows->desc_resumida,
-					  'categoria'    => $cat
-					);	
-				
+					$promo =$rows->id_promo;	 
 					array_push($data, $promo);
 				}
 			}
@@ -135,9 +126,9 @@ class Webmodel extends CI_Model {
 		else return NULL;
 	}
 	
-	public function getPointsByUser($id)
+	public function getPointsByUser($email)
 	{
-		$this->db->where("id_utilizador",$id);		
+		$this->db->where("email",$email);		
 		$query=$this->db->get("userpontos");
 		if($query->num_rows()>0)
 		{
@@ -148,24 +139,24 @@ class Webmodel extends CI_Model {
 		}
 		else
 		{
-			$this->setPointsByUser($id,0);
+			$this->setPointsByUser($email,0);
 			$pontos=0;			
 		}
 		return $pontos;
 	}
 	
-	public function setPointsByUser($id,$points)
+	public function setPointsByUser($email,$points)
 	{
-		$query=$this->db->get_where('userpontos', array('id_utilizador' => $id));
+		$query=$this->db->get_where('userpontos', array('email' => $email));
 		if($query->num_rows()>0)
 		{
-			$this->db->where('id_utilizador',$id);
+			$this->db->where('email',$email);
 			$this->db->update('userpontos', array('pontos'=>$pontos));
 			return true;
 		}
 		else
 		{
-			$this->db->insert('userpontos',array('id_utilizador'=>$id,'pontos'=>$points));
+			$this->db->insert('userpontos',array('email'=>$email,'pontos'=>$points));
 			return true;
 		}		
 	}

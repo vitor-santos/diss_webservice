@@ -61,11 +61,11 @@ class Api extends REST_Controller
 	
 	function highlightedpromos_get()
     {
-        $promos=$this->webmodel->getPromotedPromos($this->get('id_promo'));        
+        $promos=$this->webmodel->getPromotedPromos();        
     	
-        if(is_null($promos))
+        if(is_null($promos)||empty($promos))
         {
-			$this->response(array('error' => 'User could not be found'), 404);            
+			$this->response(array('error' => 'There are no highlighted promos'), 404);            
         }
         else
         {
@@ -94,12 +94,12 @@ class Api extends REST_Controller
     
     function userpoints_get()
     {
-		if(!$this->get('id_utilizador'))
+		if(!$this->get('email'))
         {
         	$this->response(NULL, 400);
         }
 		
-        $pontos=$this->webmodel->getPointsByUser($this->get('id_utilizador'));
+        $pontos=$this->webmodel->getPointsByUser($this->get('email'));
 		
 		if(is_null($pontos))
         { 
@@ -108,18 +108,18 @@ class Api extends REST_Controller
 		}
 		else
 		{			
-			$this->response(array('id_utilizador'=>$this->get('id_utilizador'),'pontos' => $pontos), 200); // 200 being the HTTP response code
+			$this->response(array('email'=>$this->get('email'),'pontos' => $pontos), 200); // 200 being the HTTP response code
 		}
     }
     
     function userpoints_post()
     {
-		if(!$this->post('id_utilizador')||!$this->post('pontos'))
+		if(!$this->post('email')||!$this->post('pontos'))
         {
         	$this->response(NULL, 400);
         }
 		
-    	$result=$this->webmodel->setPointsByUser( $this->post('id_utilizador'),$this->post('pontos') );
+    	$result=$this->webmodel->setPointsByUser( $this->post('email'),$this->post('pontos') );
 		
 		if($result)
 		{
