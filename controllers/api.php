@@ -55,7 +55,12 @@ class Api extends REST_Controller
         }
         else
         {
-          $this->response($promos, 200); // 200 being the HTTP response code  
+			$result=array(
+			'Code'=>200,
+			'Promos'=>$promos
+			);
+		
+          $this->response($result, 200); // 200 being the HTTP response code  
         }
     }
 	
@@ -72,6 +77,25 @@ class Api extends REST_Controller
           $this->response($promos, 200); // 200 being the HTTP response code  
         }
     }
+	
+	function entities_get()
+	{
+		$en=$this->webmodel->getAllEntities();        
+    	
+        if(is_null($en))
+        {
+			$this->response(array('error' => 'There are no entities'), 404);            
+        }
+        else
+        {
+			$result=array(
+			'Code'=>200,
+			'Entities'=>$en
+			);
+		
+          $this->response($result, 200); // 200 being the HTTP response code  
+        }
+	}
 	
 	function entity_get()
     {
@@ -107,8 +131,13 @@ class Api extends REST_Controller
 			$this->response(array('error' => 'Critical error'), 404); 
 		}
 		else
-		{			
-			$this->response(array('email'=>$this->get('email'),'pontos' => $pontos), 200); // 200 being the HTTP response code
+		{	
+			$result=array(
+				"Code"=>200,
+				"Pontos"=>$pontos
+				);
+			
+			$this->response($result, 200); // 200 being the HTTP response code
 		}
     }
     

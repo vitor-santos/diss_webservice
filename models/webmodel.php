@@ -57,25 +57,56 @@ class Webmodel extends CI_Model {
 		{
 			foreach($query->result() as $rows)
 			{
-				/*$sql = "SELECT nome FROM categoria WHERE id_categoria = (SELECT id_categoria FROM catpromo WHERE id_promo= ?)";
-				$query2=$this->db->query($sql, array($rows->id_promo));
-				$row = $query2->row_array();
-				$cat=$row['nome'];
-				
-				$promo = array(
-					  'inicio_promo'  => $rows->inicio_promo,
-					  'fim_promo'    => $rows->fim_promo,
-					  'valor_voucher'  => $rows->valor_voucher,
-					  'destaque'	=>$rows->destaque,
-					  'id_promo'	=>$rows->id_promo,
-					  'fim_destaque'  => $rows->fim_destaque,
-					  'id_entidade'    => $rows->id_entidade,
-					  'desc_resumida'  => $rows->desc_resumida,
-					  'categoria'    => $cat
-					);	
-				*/
 				$promo=$this->getPromoById($rows->id_promo);
 				array_push($data, $promo);
+			}
+			return $data;
+		}
+		else return NULL;
+		
+	}
+	
+	
+	public function getEntityById($id)
+	{
+		$this->db->where("id_entidade",$id);		
+		$query=$this->db->get("entidade");
+		
+		if($query->num_rows()>0)
+		{
+			foreach($query->result() as $rows)
+			{	
+				$user = array(
+					  'id_entidade'  => $rows->id_entidade,
+					  'nome'  => $rows->nome,
+					  'email'    => $rows->email,
+					  'contacto'  => $rows->contacto,
+					  'descricao'    => $rows->descricao,
+					  'morada'	=>$rows->morada,
+					  'nome_prop'    => $rows->nome_prop,
+					  'latitude'	=> $rows->latitude,
+					  'longitude'	=> $rows->longitude,
+					  'tipo'	=> $rows->tipo
+				);				
+				return $user;
+			}			
+		}
+		else return NULL;
+	}
+	
+	//Devolve informações resumidas de todas as promoções. Gastar menos dados.
+	public function getAllEntities()
+	{
+		$query=$this->db->get('entidade');
+		
+		$data=array();
+		
+		if($query->num_rows()>0)
+		{
+			foreach($query->result() as $rows)
+			{
+				$en=$this->getEntityById($rows->id_entidade);
+				array_push($data, $en);
 			}
 			return $data;
 		}
@@ -102,29 +133,6 @@ class Webmodel extends CI_Model {
 		else return NULL;		
 	}
 	
-	public function getEntityById($id)
-	{
-		$this->db->where("id_entidade",$id);		
-		$query=$this->db->get("entidade");
-		
-		if($query->num_rows()>0)
-		{
-			foreach($query->result() as $rows)
-			{	
-				$user = array(
-					  'id_entidade'  => $rows->id_entidade,
-					  'nome'  => $rows->nome,
-					  'email'    => $rows->email,
-					  'contacto'  => $rows->contacto,
-					  'descricao'    => $rows->descricao,
-					  'morada'	=>$rows->morada,
-					  'nome_prop'    => $rows->nome_prop,
-				);				
-				return $user;
-			}			
-		}
-		else return NULL;
-	}
 	
 	public function getPointsByUser($email)
 	{

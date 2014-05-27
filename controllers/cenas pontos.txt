@@ -1,0 +1,18 @@
+public void UpdatePoints(String email, int amount)
+{
+    	User u = getUserByEmail(email);
+        double b = u.getPoints() + amount;
+        ContentValues values = new ContentValues();
+        values.put(SQLiteHelper.COLUMN_POINTS, b);
+
+        database.update(SQLiteHelper.TABLE_USERS, values, SQLiteHelper.COLUMN_EMAIL + " =?", new String[]{email});
+}
+
+public void setPoints(String email, int amount) 
+{
+        ContentValues values = new ContentValues();
+        values.put(SQLiteHelper.COLUMN_POINTS, amount);
+
+        database.update(SQLiteHelper.TABLE_USERS, values, SQLiteHelper.COLUMN_EMAIL + " =?", new String[]{email});
+}
+	
