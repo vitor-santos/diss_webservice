@@ -159,7 +159,7 @@ class Webmodel extends CI_Model {
 		if($query->num_rows()>0)
 		{
 			$this->db->where('email',$email);
-			$this->db->update('userpontos', array('pontos'=>$pontos));
+			$this->db->update('userpontos', array('pontos'=>$points));
 			return true;
 		}
 		else
@@ -215,9 +215,9 @@ class Webmodel extends CI_Model {
 		else return NULL;	
 	}
 	
-	public function getVouchersByUser($id)
+	public function getVouchersByUser($email)
 	{
-		$this->db->where("id_utilizador",$id);	
+		$this->db->where("email",$email);	
 		$query=$this->db->get("voucher");
 		$data=array();
 		if($query->num_rows()>0)
@@ -230,7 +230,7 @@ class Webmodel extends CI_Model {
 					  'data_compra'  => $rows->data_validacao,
 					  'estado'    => $rows->estado,
 					  'id_promo'  => $rows->id_promo,
-					  'id_utilizador'    => $rows->id_utilizador,
+					  'email'    => $rows->email,
 					  'id_voucher'	=>$rows->id_voucher					  
 				);
 				array_push($data,$voucher);			

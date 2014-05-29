@@ -185,12 +185,12 @@ class Api extends REST_Controller
 	
 	function uservouchers_get()
     {
-		if(!$this->get('id_utilizador'))
+		if(!$this->get('email'))
         {
         	$this->response(NULL, 400);
         }
 		
-        $vouchers=$this->webmodel->getVouchersByUser($this->get('id_utilizador'));        
+        $vouchers=$this->webmodel->getVouchersByUser($this->get('email'));        
     	
         if(is_null($vouchers))
         {
@@ -198,7 +198,11 @@ class Api extends REST_Controller
         }
         else
         {
-          $this->response($vouchers, 200); // 200 being the HTTP response code  
+			$result=array(
+			'Code'=>200,
+			'Vouchers'=>$vouchers
+			);
+			$this->response($result, 200); // 200 being the HTTP response code  
         }
     }
 	
@@ -241,22 +245,36 @@ class Api extends REST_Controller
 		
 	}
 	
-	function buyvoucher_put()
+	function buyvoucher_get()
 	{
 		//substr(md5(rand()), 0, 7);
-		if(!$this->put('id_utilizador')||!$this->put('id_promo'))
+		if(!$this->get('email')||!$this->get('id_promo')||!$this->get('pontos'))
         {
-        	$this->response(NULL, 400);
+			$data=array('Code'=>300,
+						'Error'=>'Missing parameters');
+        	$this->response($data, 300);
         }
 		
-		$data=array(
-			'id_promo'=>$this->put('id_promo'),
-			'id_utilizador'=>$this->put('id_utilizador'),
-			'chave_validacao'=>substr(md5(rand()), 0, 10),
+		if($this->get('pontos')>$this->webmodel->getPointsByUser($this->get('email')))
+		{
+			$data=array('Code'=>301,
+						'Error'=>'Not enough points');
+        	$this->response($data, 301);
+		}
+		
+		$dataV=array(
+			'id_promo'=>$this->get('id_promo'),
+			'email'=>$this->get('email'),
+			'chave_validacao'=>substr(md5(rand()), 0, 10)			
 		);
 	
-		$this->webmodel->buyVoucher($data);
-		$this->response(array('Success'=>'Voucher bought'), 200); // 200 being the HTTP response code 		
+		$this->webmodel->buyVoucher($dataV);
+		$pontos=$this->webmodel->getPointsByUser($this->get('email'))-$this->get('pontos');
+		$this->webmodel->setPointsByUser($this->get('email'),$pontos);
+		
+		$data=array('Code'=>200,
+						'Success'=>'Voucher bought');
+        $this->response($data, 200);			
 	}	
 
 	public function send_post()
