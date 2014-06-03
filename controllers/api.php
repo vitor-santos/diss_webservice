@@ -141,27 +141,32 @@ class Api extends REST_Controller
 		}
     }
     
-    function userpoints_post()
+    function updatepoints_get()
     {
-		if(!$this->post('email')||!$this->post('pontos'))
+		if(!$this->get('email')||!$this->get('pontos'))
         {
-        	$this->response(NULL, 400);
+        	$data=array('Code'=>300,
+						'Error'=>'Missing parameters');
+        	$this->response($data, 300);			
         }
 		
-    	$result=$this->webmodel->setPointsByUser( $this->post('email'),$this->post('pontos') );
+		$pontos=$this->webmodel->getPointsByUser($this->get('email'));
+		
+    	$result=$this->webmodel->setPointsByUser( $this->get('email'),$pontos+$this->get('pontos'));
 		
 		if($result)
 		{
-			 $this->response(array('Result' => 'User points updated'), 200);
+			$data=array('Code'=>200,
+						'Success'=>'Points updated successfully');
+        	$this->response($data, 200);
 		}
 		else
 		{
 			//Algo correu mal, nunca devia entrar aqui.
-			$this->response(array('error' => 'Critical error'), 404); 			
+			$this->response(array('Error' => 'Critical error','Code'=>404), 404); 			
 		}
 		
-    }
-	
+    }	
     
     function voucher_get()
     {
@@ -172,14 +177,17 @@ class Api extends REST_Controller
 		
 		$voucher=$this->webmodel->getVoucherById($this->get('id_voucher'));
 		
-        if(is_null($voucher))
+        if(!is_null($voucher))
         {
-            $this->response($voucher, 200); // 200 being the HTTP response code
+			$data=array(
+			'Voucher'=>$voucher,
+			'Code'=>200);
+            $this->response($data, 200); // 200 being the HTTP response code
         }
 
         else
         {
-            $this->response(array('error' => 'Couldn\'t find the wanted voucher!'), 404);
+            $this->response(array('Error' => 'Couldn\'t find the wanted voucher!','Code'=>404), 404);
         }
     }
 	
@@ -194,7 +202,7 @@ class Api extends REST_Controller
     	
         if(is_null($vouchers))
         {
-			$this->response(array('error' => 'User could not be found or doesn\'t have any vouchers'), 404);            
+			$this->response(array('error' => 'User could not be found or doesn\'t have any vouchers','Code'=>404), 404);            
         }
         else
         {

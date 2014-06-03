@@ -182,7 +182,7 @@ class Webmodel extends CI_Model {
 					  'data_validacao'  => $rows->data_validacao,
 					  'estado'    => $rows->estado,
 					  'id_promo'  => $rows->id_promo,
-					  'id_utilizador'    => $rows->id_utilizador,
+					  'email'    => $rows->email,
 					  'id_voucher'	=>$rows->id_voucher					  
 				);
 				return $voucher;
